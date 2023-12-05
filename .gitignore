@@ -1,4 +1,5 @@
 /__pycache__/
 /celes_microservice/__pycache__/
 /resources/data_files/
+/tests/test_data/
 celes.db
