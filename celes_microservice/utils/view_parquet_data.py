@@ -23,9 +23,11 @@ def view_data(folder_path: str):
     # View the combined DataFrame
     print(combined_df.head())  # View the first few rows
     print(combined_df.info())  # View information about the DataFrame
+    combined_df.to_csv("test_data.csv", index=False)
 
 
 if __name__ == "__main__":
-    folder_path = 'resources/data_files'
+    #folder_path = 'resources/data_files'
+    folder_path = './tests/test_data'
     view_data(folder_path)
 

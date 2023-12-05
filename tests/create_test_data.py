@@ -2,7 +2,8 @@ import pandas as pd
 import os
 import random
 
-def create_test_parquet(original_folder, test_file_path, row_count=500, seed=42):
+
+def create_test_parquet(original_folder, test_file_path, row_count=50, seed=42):
     random.seed(seed)  # Set the seed for reproducibility
 
     # List all Parquet files in the specified directory
