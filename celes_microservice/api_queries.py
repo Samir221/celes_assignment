@@ -1,5 +1,6 @@
 import os
 from fastapi import FastAPI
+import pyarrow.parquet as pq
 import pyarrow as pa
 import uvicorn
 
@@ -67,4 +68,3 @@ def total_avg_sales_per_employee(key: str):
     filtered_table = combined_table.filter(f"KeyEmployee == '{key}'")
     sales_data = filtered_table.groupby("KeyEmployee").agg({"Amount": ["sum", "mean"]}).to_pydict()
     return {"total_avg_sales_per_employee": sales_data}
-
