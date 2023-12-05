@@ -1,11 +1,13 @@
 import os
 from fastapi import FastAPI
-import pyarrow.parquet as pq
+import pyarrow as pa
+import uvicorn
+
 
 app = FastAPI()
 
 # Path to the directory containing the Parquet files
-parquet_folder_path = "resources/data_files"
+parquet_folder_path = "../resources/data_files"
 
 # List all files in the specified directory
 all_files = os.listdir(parquet_folder_path)
@@ -13,9 +15,13 @@ all_files = os.listdir(parquet_folder_path)
 # Filter out only the Parquet files
 parquet_file_paths = [os.path.join(parquet_folder_path, file) for file in all_files if file.endswith('.parquet')]
 
-# Read all Parquet files into a single PyArrow Table
-parquet_tables = [pq.read_table(file_path) for file_path in parquet_file_paths]
-combined_table = pq.concat_tables(parquet_tables)
+record_batches = []
+for file_path in parquet_file_paths:
+    table = pq.read_table(file_path)
+    record_batches.extend(table.to_batches())
+
+# Concatenate the record batches into a single table
+combined_table = pa.Table.from_batches(record_batches)
 
 
 # Endpoint to view sales in a period per employee

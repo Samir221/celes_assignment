@@ -1,2 +1,4 @@
+/__pycache__/
+/celes_microservice/__pycache__/
 /resources/data_files/
 celes.db
