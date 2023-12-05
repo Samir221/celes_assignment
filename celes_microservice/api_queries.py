@@ -1,5 +1,6 @@
 import os
 from fastapi import FastAPI
+import pyarrow.parquet as pq
 import pyarrow as pa
 import uvicorn
 
