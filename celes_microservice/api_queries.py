@@ -2,6 +2,7 @@ from fastapi import FastAPI
 import pandas as pd
 from fastapi.responses import JSONResponse
 from fastapi import status
+from datetime import datetime
 import uvicorn
 
 
@@ -14,35 +15,24 @@ parquet_folder_path = "../resources/data_files"
 full_df = pd.read_parquet(parquet_folder_path, engine='auto')
 
 
-# Endpoint to view sales in a period per employee
 @app.get("/sales_per_employee/{key}")
-def sales_per_employee(key):
-    print(f"Received key: {key}")
-
-    # Check for empty key
-    if key == " ":
-        return JSONResponse(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, content={"detail": "Blank Key"})
-
-    filtered_df = full_df[full_df['KeyEmployee'] == key] 
+def sales_per_employee(key: str, from_date: datetime, to_date: datetime):
+    filtered_df = full_df[(full_df['KeyEmployee'] == key) & (full_df['KeyDate'] >= from_date) & (full_df['KeyDate'] <= to_date)]
 
     # Check if the filtered table is empty
-    if len(filtered_df) == 0:
-        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"detail": "Not Found"})
+    if filtered_df.empty:
+        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"detail": "No Records Found"})
     
     # Convert DataFrame to a list of dictionaries (JSON serializable)
     json_data = filtered_df.to_dict(orient='records')
     
-    return json_data 
+    return json_data
 
 
 # Endpoint to view sales in a period by product
 @app.get("/sales_by_product/{key}")
-def sales_by_product(key: str):
-    # Check for empty key
-    if key == " ":
-        return JSONResponse(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, content={"detail": "Blank Key"})
-    
-    filtered_df = full_df[full_df['KeyProduct'] == key] 
+def sales_by_product(key: str, from_date: datetime, to_date: datetime):
+    filtered_df = full_df[(full_df['KeyProduct'] == key) & (full_df['KeyDate'] >= from_date) & (full_df['KeyDate'] <= to_date)]
     
     # Check if the filtered table is empty
     if len(filtered_df) == 0:
@@ -57,12 +47,8 @@ def sales_by_product(key: str):
 
 # Endpoint to view sales in a period by store
 @app.get("/sales_by_store/{key}")
-def sales_by_store(key: str):
-    # Check for empty key
-    if key == " ":
-        return JSONResponse(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, content={"detail": "Blank Key"})
-    
-    filtered_df = full_df[full_df['KeyStore'] == key] 
+def sales_by_store(key: str, from_date: datetime, to_date: datetime):  
+    filtered_df = full_df[(full_df['KeyStore'] == key) & (full_df['KeyDate'] >= from_date) & (full_df['KeyDate'] <= to_date)]
     
     # Check if the filtered table is empty
     if len(filtered_df) == 0:
