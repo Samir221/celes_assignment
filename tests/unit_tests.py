@@ -1,7 +1,5 @@
 from fastapi.testclient import TestClient 
-import sys
 import pandas as pd
-#sys.path.append(r'C:\Users\samir\tech_projects\celes_assignment')
 from celes_microservice.api_queries import app 
 
 
@@ -9,17 +7,19 @@ client = TestClient(app)
 
 
 sample_data = {
-    "valid_employee_key": "1|17542",  
+    "valid_employee_key": "1|17542",
     "invalid_employee_key": "123456X",
-    "valid_product_key": "1|43448",
+    "valid_product_key": "1|62481",
     "invalid_product_key": "123456Y",
-    "valid_store_key": "1|103",
+    "valid_store_key": "1|004",
     "invalid_store_key": "1234Z",
+    "from_date": "2022-10-01",
+    "to_date": "2023-12-04"
 }
 
 
 def test_sales_per_employee_valid():
-    response = client.get("/sales_per_employee/" + sample_data["valid_employee_key"])
+    response = client.get(f"/sales_per_employee/{sample_data['valid_employee_key']}?from_date={sample_data['from_date']}&to_date={sample_data['to_date']}")
     assert response.status_code == 200
     try:
         df = pd.DataFrame(response.json())
@@ -29,13 +29,13 @@ def test_sales_per_employee_valid():
 
 
 def test_sales_per_employee_invalid():
-    response = client.get("/sales_per_employee/" + sample_data["invalid_employee_key"])
+    response = client.get(f"/sales_per_employee/{sample_data['invalid_employee_key']}?from_date={sample_data['from_date']}&to_date={sample_data['to_date']}")
     assert response.status_code == 404
     assert "Not Found" in response.json()["detail"]
 
 
-def test_sales_by_product_valid():
-    response = client.get("/sales_by_product/" + sample_data["valid_product_key"])
+def test_sales_per_product_valid():
+    response = client.get(f"/sales_per_product/{sample_data['valid_product_key']}?from_date={sample_data['from_date']}&to_date={sample_data['to_date']}")
     assert response.status_code == 200
     try:
         df = pd.DataFrame(response.json())
@@ -45,13 +45,13 @@ def test_sales_by_product_valid():
 
 
 def test_sales_by_product_invalid():
-    response = client.get("/sales_by_product/" + sample_data["invalid_product_key"])
+    response = client.get(f"/sales_per_product/{sample_data['invalid_product_key']}?from_date={sample_data['from_date']}&to_date={sample_data['to_date']}")
     assert response.status_code == 404
     assert "Not Found" in response.json()["detail"]
 
 
 def test_sales_by_store_valid():
-    response = client.get("/sales_by_store/" + sample_data["valid_store_key"])
+    response = client.get(f"/sales_per_store/{sample_data['valid_store_key']}?from_date={sample_data['from_date']}&to_date={sample_data['to_date']}")
     assert response.status_code == 200
     try:
         df = pd.DataFrame(response.json())
@@ -61,7 +61,7 @@ def test_sales_by_store_valid():
 
 
 def test_sales_by_store_invalid():
-    response = client.get("/sales_by_store/" + sample_data["invalid_store_key"])
+    response = client.get(f"/sales_per_store/{sample_data['invalid_store_key']}?from_date={sample_data['from_date']}&to_date={sample_data['to_date']}")
     assert response.status_code == 404
     assert "Not Found" in response.json()["detail"]
 

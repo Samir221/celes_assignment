@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 import pandas as pd
-from fastapi.responses import JSONResponse
+from fastapi import HTTPException
 from fastapi import status
 from datetime import datetime
 import uvicorn
@@ -10,18 +10,22 @@ app = FastAPI()
 
 
 # Path to the directory containing the Parquet files
-parquet_folder_path = "../resources/data_files"
+parquet_folder_path = "../resources/data_files_full"
 
 full_df = pd.read_parquet(parquet_folder_path, engine='auto')
 
 
+# Endpoint to view sales in a period by employee
 @app.get("/sales_per_employee/{key}")
-def sales_per_employee(key: str, from_date: datetime, to_date: datetime):
+def sales_per_employee(key: str, from_date: str, to_date: str):
+    from_date = datetime.strptime(from_date, "%Y-%m-%d").date()
+    to_date = datetime.strptime(to_date, "%Y-%m-%d").date()
+
     filtered_df = full_df[(full_df['KeyEmployee'] == key) & (full_df['KeyDate'] >= from_date) & (full_df['KeyDate'] <= to_date)]
 
     # Check if the filtered table is empty
-    if filtered_df.empty:
-        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"detail": "No Records Found"})
+    if len(filtered_df) == 0:
+        raise HTTPException(status_code=404, detail="Not Found")
     
     # Convert DataFrame to a list of dictionaries (JSON serializable)
     json_data = filtered_df.to_dict(orient='records')
@@ -30,34 +34,39 @@ def sales_per_employee(key: str, from_date: datetime, to_date: datetime):
 
 
 # Endpoint to view sales in a period by product
-@app.get("/sales_by_product/{key}")
-def sales_by_product(key: str, from_date: datetime, to_date: datetime):
+@app.get("/sales_per_product/{key}")
+def sales_per_product(key: str, from_date: str, to_date: str):
+    from_date = datetime.strptime(from_date, "%Y-%m-%d").date()
+    to_date = datetime.strptime(to_date, "%Y-%m-%d").date()
+
     filtered_df = full_df[(full_df['KeyProduct'] == key) & (full_df['KeyDate'] >= from_date) & (full_df['KeyDate'] <= to_date)]
-    
+
     # Check if the filtered table is empty
     if len(filtered_df) == 0:
-        print("HELLLOOOOOOO")
-        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"detail": "Not Found"})
-
+        raise HTTPException(status_code=404, detail="Not Found")
+    
     # Convert DataFrame to a list of dictionaries (JSON serializable)
     json_data = filtered_df.to_dict(orient='records')
     
-    return json_data 
+    return json_data
     
 
 # Endpoint to view sales in a period by store
-@app.get("/sales_by_store/{key}")
-def sales_by_store(key: str, from_date: datetime, to_date: datetime):  
+@app.get("/sales_per_store/{key}")
+def sales_per_store(key: str, from_date: str, to_date: str):
+    from_date = datetime.strptime(from_date, "%Y-%m-%d").date()
+    to_date = datetime.strptime(to_date, "%Y-%m-%d").date()
+
     filtered_df = full_df[(full_df['KeyStore'] == key) & (full_df['KeyDate'] >= from_date) & (full_df['KeyDate'] <= to_date)]
-    
+
     # Check if the filtered table is empty
     if len(filtered_df) == 0:
-        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"detail": "Not Found"})
-
+        raise HTTPException(status_code=404, detail="Not Found")
+    
     # Convert DataFrame to a list of dictionaries (JSON serializable)
     json_data = filtered_df.to_dict(orient='records')
     
-    return json_data 
+    return json_data
 
 
 # Endpoint to view total and average sales by store
@@ -68,7 +77,7 @@ def total_avg_sales_by_store(key: str):
 
     # Check if the filtered table is empty
     if len(filtered_df) == 0:
-        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"detail": "Not Found"})
+        raise HTTPException(status_code=404, detail="Not Found")
 
     # Perform aggregation operations separately
     sum_amount = filtered_df['Amount'].sum()
@@ -91,7 +100,7 @@ def total_avg_sales_by_product(key: str):
 
     # Check if the filtered table is empty
     if len(filtered_df) == 0:
-        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"detail": "Not Found"})
+        raise HTTPException(status_code=404, detail="Not Found")
 
     # Perform aggregation operations separately
     sum_amount = filtered_df['Amount'].sum()
@@ -114,7 +123,7 @@ def total_avg_sales_by_employee(key: str):
 
     # Check if the filtered table is empty
     if len(filtered_df) == 0:
-        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"detail": "Not Found"})
+        raise HTTPException(status_code=404, detail="Not Found")
 
     # Perform aggregation operations separately
     sum_amount = filtered_df['Amount'].sum()
