@@ -1,23 +1,34 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 import pandas as pd
 from fastapi import HTTPException
 from fastapi import status
+from fastapi import Header
 from datetime import datetime
+from firebase_auth import validate_token
+import firebase_auth
+import firebase_admin
+from firebase_admin import credentials
+import os
 import uvicorn
 
 
 app = FastAPI()
 
+# firebase initialization code
+if not firebase_admin._apps and not os.getenv("TEST_ENV"):
+    cred = credentials.Certificate("credentials.json")
+    firebase_admin.initialize_app(cred)
+
 
 # Path to the directory containing the Parquet files
-parquet_folder_path = "../resources/data_files_full"
+parquet_folder_path = "../resources/data_files"
 
 full_df = pd.read_parquet(parquet_folder_path, engine='auto')
 
 
 # Endpoint to view sales in a period by employee
 @app.get("/sales_per_employee/{key}")
-def sales_per_employee(key: str, from_date: str, to_date: str):
+async def sales_per_employee(key: str, from_date: str, to_date: str, user_id: str = Depends(validate_token)):
     from_date = datetime.strptime(from_date, "%Y-%m-%d").date()
     to_date = datetime.strptime(to_date, "%Y-%m-%d").date()
 

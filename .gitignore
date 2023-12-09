@@ -163,5 +163,4 @@ cython_debug/
 /resources/data_files/
 /resources/data_files_full/
 /tests/test_data/
-celes.db
-test_data.csv
+credentials.json
