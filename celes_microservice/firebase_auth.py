@@ -1,16 +1,14 @@
 from fastapi.responses import JSONResponse
 from fastapi.requests import Request
-import jwt
-from jwt import PyJWTError
 import uvicorn
 from fastapi import FastAPI
 import firebase_admin
 from firebase_admin import credentials, auth
 import pyrebase
 from fastapi import FastAPI, Depends, HTTPException, Header
-from fastapi.security import OAuth2PasswordBearer
 import firebase_admin.auth
 from fastapi import HTTPException
+import json
 
 
 if not firebase_admin._apps:
@@ -76,6 +74,13 @@ async def create_access_token():
     except:
         raise HTTPException(status_code=400, details="Invalid Credentials.")
 
+ 
+async def get_valid_token():
+    token_response = await create_access_token()
+    content_bytes = token_response.body  # Get the raw content as bytes
+    content_str = content_bytes.decode('utf-8')  # Decode bytes to string
+    json_content = json.loads(content_str) 
+    return json_content
 
 
 if __name__ == "__main__":

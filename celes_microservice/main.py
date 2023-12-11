@@ -1,18 +1,9 @@
 import asyncio
 import json
-from firebase_auth import create_access_token
+from firebase_auth import create_access_token, get_valid_token
 import requests
 import asyncio
 import json
-import httpx
-
-
-async def get_valid_token():
-    token_response = await create_access_token()
-    content_bytes = token_response.body  # Get the raw content as bytes
-    content_str = content_bytes.decode('utf-8')  # Decode bytes to string
-    json_content = json.loads(content_str) 
-    return json_content
 
 
 async def main():
@@ -32,6 +23,7 @@ async def main():
     
     if response.status_code == 200:
         json_data = response.json()
+        print(json_data)
     else:
         error_message = response.content.decode("utf-8") 
         print(f"Failed to fetch data. Status code: {response.status_code}. Error: {error_message}")
