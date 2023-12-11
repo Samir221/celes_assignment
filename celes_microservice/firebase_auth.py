@@ -8,7 +8,7 @@ from fastapi import FastAPI
 import firebase_admin.auth
 from fastapi import HTTPException
 import json
-from .firebase_config import firebaseConfig
+# from .firebase_config import firebaseConfig  - imported as secrets in github
 from dotenv import load_dotenv
 import os
 
