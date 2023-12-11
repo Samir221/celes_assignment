@@ -23,10 +23,8 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
     - name: Create Firebase credentials file
-      run: echo '${{ secrets.FIREBASE_CREDENTIALS }}' > celes_microservice/credentials.json
-
-    - name: Debug - Print credentials.json content
-      run: cat celes_microservice/credentials.json
+      run: |
+        echo '${{ secrets.FIREBASE_CREDENTIALS }}' | base64 -d > celes_microservice/credentials.json
 
     - name: Set Firebase Config Environment Variables
       run: |
