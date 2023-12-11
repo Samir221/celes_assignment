@@ -42,7 +42,7 @@ jobs:
       run: ls -la tests/
 
     - name: Run Unit Tests
-      run: pytest tests/unit_tests.py
+      run: pytest -vv tests/unit_tests.py
 
     - name: Static Code Analysis
       run: pylint myapp
