@@ -1,10 +1,8 @@
 from fastapi import Depends, FastAPI
 import pandas as pd
 from fastapi import HTTPException
-from fastapi import Header
 from datetime import datetime
-from .firebase_auth import validate_token
-
+from celes_microservice.firebase_auth import validate_token
 
 
 app = FastAPI()
@@ -24,11 +22,9 @@ async def sales_per_employee(key: str, from_date: str, to_date: str, user_id: st
 
     filtered_df = full_df[(full_df['KeyEmployee'] == key) & (full_df['KeyDate'] >= from_date) & (full_df['KeyDate'] <= to_date)]
 
-    # Check if the filtered table is empty
     if len(filtered_df) == 0:
         raise HTTPException(status_code=404, detail="Not Found")
-    
-    # Convert DataFrame to a list of dictionaries (JSON serializable)
+
     json_data = filtered_df.to_dict(orient='records')
     
     return json_data
@@ -42,11 +38,9 @@ def sales_per_product(key: str, from_date: str, to_date: str, user_id: str = Dep
 
     filtered_df = full_df[(full_df['KeyProduct'] == key) & (full_df['KeyDate'] >= from_date) & (full_df['KeyDate'] <= to_date)]
 
-    # Check if the filtered table is empty
     if len(filtered_df) == 0:
         raise HTTPException(status_code=404, detail="Not Found")
     
-    # Convert DataFrame to a list of dictionaries (JSON serializable)
     json_data = filtered_df.to_dict(orient='records')
     
     return json_data
@@ -60,11 +54,9 @@ def sales_per_store(key: str, from_date: str, to_date: str, user_id: str = Depen
 
     filtered_df = full_df[(full_df['KeyStore'] == key) & (full_df['KeyDate'] >= from_date) & (full_df['KeyDate'] <= to_date)]
 
-    # Check if the filtered table is empty
     if len(filtered_df) == 0:
         raise HTTPException(status_code=404, detail="Not Found")
     
-    # Convert DataFrame to a list of dictionaries (JSON serializable)
     json_data = filtered_df.to_dict(orient='records')
     
     return json_data
@@ -76,11 +68,9 @@ def total_avg_sales_by_store(key: str, user_id: str = Depends(validate_token)):
 
     filtered_df = full_df[full_df['KeyStore'] == key] 
 
-    # Check if the filtered table is empty
     if len(filtered_df) == 0:
         raise HTTPException(status_code=404, detail="Not Found")
 
-    # Perform aggregation operations separately
     sum_amount = filtered_df['Amount'].sum()
     mean_amount = filtered_df['Amount'].mean()
 
@@ -89,7 +79,6 @@ def total_avg_sales_by_store(key: str, user_id: str = Depends(validate_token)):
         "sum_amount": sum_amount,
         "mean_amount": mean_amount
     }
-
     return {"total_avg_sales_by_store": sales_data}
 
 
@@ -99,11 +88,9 @@ def total_avg_sales_by_product(key: str, user_id: str = Depends(validate_token))
 
     filtered_df = full_df[full_df['KeyProduct'] == key] 
 
-    # Check if the filtered table is empty
     if len(filtered_df) == 0:
         raise HTTPException(status_code=404, detail="Not Found")
-
-    # Perform aggregation operations separately
+    
     sum_amount = filtered_df['Amount'].sum()
     mean_amount = filtered_df['Amount'].mean()
 
@@ -112,7 +99,6 @@ def total_avg_sales_by_product(key: str, user_id: str = Depends(validate_token))
         "sum_amount": sum_amount,
         "mean_amount": mean_amount
     }
-
     return {"total_avg_sales_by_store": sales_data}
 
 
@@ -122,11 +108,9 @@ def total_avg_sales_by_employee(key: str, user_id: str = Depends(validate_token)
 
     filtered_df = full_df[full_df['KeyEmployee'] == key] 
 
-    # Check if the filtered table is empty
     if len(filtered_df) == 0:
         raise HTTPException(status_code=404, detail="Not Found")
 
-    # Perform aggregation operations separately
     sum_amount = filtered_df['Amount'].sum()
     mean_amount = filtered_df['Amount'].mean()
 
@@ -135,5 +119,4 @@ def total_avg_sales_by_employee(key: str, user_id: str = Depends(validate_token)
         "sum_amount": sum_amount,
         "mean_amount": mean_amount
     }
-
     return {"total_avg_sales_by_store": sales_data}

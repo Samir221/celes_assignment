@@ -164,3 +164,4 @@ cython_debug/
 /resources/data_files_full/
 /tests/test_data/
 credentials.json
+firebase_config.py

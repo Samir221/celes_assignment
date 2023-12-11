@@ -1,30 +1,24 @@
 from fastapi.responses import JSONResponse
 from fastapi.requests import Request
 import uvicorn
-from fastapi import FastAPI
 import firebase_admin
 from firebase_admin import credentials, auth
 import pyrebase
-from fastapi import FastAPI, Depends, HTTPException, Header
+from fastapi import FastAPI
 import firebase_admin.auth
 from fastapi import HTTPException
 import json
+from .firebase_config import firebaseConfig
+from dotenv import load_dotenv
+import os
+
+
+load_dotenv()
 
 
 if not firebase_admin._apps:
     cred = credentials.Certificate("credentials.json")
     firebase_admin.initialize_app(cred) 
-
-
-firebaseConfig = {
-  "apiKey": "AIzaSyDYPmn0gy6IlxkH3Wd5tVvcBs2CnLbt83Y",
-  "authDomain": "celes-queries.firebaseapp.com",
-  "projectId": "celes-queries",
-  "storageBucket": "celes-queries.appspot.com",
-  "messagingSenderId": "191358285229",
-  "appId": "1:191358285229:web:69d4e2792e49e285935d24",
-  "databaseURL": ""
-}
 
 
 firebase = pyrebase.initialize_app(firebaseConfig)
@@ -47,9 +41,7 @@ async def validate_token(request: Request):
     jwt_token = auth_header.split(" ")[1]
 
     try:
-        #user = firebase_admin.auth.verify_id_token(jwt_token)
         user = auth.verify_id_token(jwt_token)
-        #return user.uid
         return user
     except firebase_admin.auth.InvalidIdTokenError:
         raise HTTPException(status_code=401, detail="Invalid ID token")
@@ -61,12 +53,13 @@ async def validate_token(request: Request):
 
 @app.post('/login')
 async def create_access_token():
-    USERNAME = "sammy@test.com"
-    PASSWORD = "123456"
+    username = os.environ.get("FIREBASE_USERNAME")
+    password = os.environ.get("FIREBASE_PASSWORD")
+
     try:
         user = firebase.auth().sign_in_with_email_and_password(
-            email = USERNAME,
-            password = PASSWORD
+            email=username,
+            password=password
         )
         token = user.get('idToken')
         return JSONResponse(content={"token": token}, status_code=200)
@@ -77,8 +70,8 @@ async def create_access_token():
  
 async def get_valid_token():
     token_response = await create_access_token()
-    content_bytes = token_response.body  # Get the raw content as bytes
-    content_str = content_bytes.decode('utf-8')  # Decode bytes to string
+    content_bytes = token_response.body 
+    content_str = content_bytes.decode('utf-8')
     json_content = json.loads(content_str) 
     return json_content
 
