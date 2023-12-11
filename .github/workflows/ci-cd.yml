@@ -40,7 +40,7 @@ jobs:
         echo "FIREBASE_PASSWORD=${{ secrets.FIREBASE_PASSWORD }}" >> $GITHUB_ENV
 
     - name: Static Code Analysis
-      run: pylint myapp
+      run: pylint celes_microservice
 
   deploy:
     needs: build-and-test
