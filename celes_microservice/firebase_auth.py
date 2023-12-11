@@ -28,7 +28,7 @@ load_dotenv()
 
 
 if not firebase_admin._apps:
-    cred = credentials.Certificate("credentials.json")
+    cred = credentials.Certificate("celes_microservice/credentials.json")
     firebase_admin.initialize_app(cred) 
 
 
