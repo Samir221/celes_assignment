@@ -22,6 +22,19 @@ jobs:
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
+    - name: Set Firebase Config Environment Variables
+      run: |
+        echo "FIREBASE_API_KEY=${{ secrets.APIKEY }}" >> $GITHUB_ENV
+        echo "FIREBASE_AUTH_DOMAIN=${{ secrets.AUTHDOMAIN }}" >> $GITHUB_ENV
+        echo "FIREBASE_PROJECT_ID=${{ secrets.PROJECTID }}" >> $GITHUB_ENV
+        echo "FIREBASE_STORAGE_BUCKET=${{ secrets.STORAGEBUCKET }}" >> $GITHUB_ENV
+        echo "FIREBASE_MESSAGING_SENDER_ID=${{ secrets.MESSAGINGSENDERID }}" >> $GITHUB_ENV
+        echo "FIREBASE_APP_ID=${{ secrets.APPID }}" >> $GITHUB_ENV
+        # Assuming you don't have a database URL as a secret
+        # echo "FIREBASE_DATABASE_URL=${{ secrets.YOUR_DATABASE_URL_SECRET }}" >> $GITHUB_ENV
+        echo "FIREBASE_USERNAME=${{ secrets.FIREBASE_USERNAME }}" >> $GITHUB_ENV
+        echo "FIREBASE_PASSWORD=${{ secrets.FIREBASE_PASSWORD }}" >> $GITHUB_ENV
+
     - name: Run Unit Tests
       run: pytest tests/unit_tests.py
 
