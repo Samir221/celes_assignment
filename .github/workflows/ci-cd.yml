@@ -38,6 +38,9 @@ jobs:
         echo "FIREBASE_USERNAME=${{ secrets.FIREBASE_USERNAME }}" >> $GITHUB_ENV
         echo "FIREBASE_PASSWORD=${{ secrets.FIREBASE_PASSWORD }}" >> $GITHUB_ENV
 
+    - name: List test directory contents
+      run: ls -la tests/
+
     - name: Run Unit Tests
       run: pytest tests/unit_tests.py
 
