@@ -97,6 +97,10 @@ Celes Assignment is a Python-based project developed to create authenticated end
         bashCopy code
         
         `uvicorn api_queries:app --reload` 
+
+## Data Files
+
+Store the parquet data files in the relative path '/resources/data_files'.
         
 
 ## Running Tests
