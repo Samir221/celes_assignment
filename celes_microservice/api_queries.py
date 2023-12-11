@@ -1,7 +1,7 @@
-from fastapi import Depends, FastAPI
 import pandas as pd
-from fastapi import HTTPException
 from datetime import datetime
+from fastapi import Depends, FastAPI
+from fastapi import HTTPException
 from celes_microservice.firebase_auth import validate_token
 
 
